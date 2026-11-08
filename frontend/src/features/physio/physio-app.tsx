@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { apiFetch } from "@/lib/api";
 import {
   EXERCISES,
@@ -255,32 +254,22 @@ export function PhysioApp({ demo = false }: { demo?: boolean }) {
 
   useEffect(() => {
     if (demo) return;
-    const supabase = createClient();
     let active = true;
-    void supabase.auth
-      .getSession()
-      .then(({ data }) => {
+    void fetch("/api/auth/token", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Not authenticated");
+        return response.json() as Promise<{ accessToken: string }>;
+      })
+      .then(({ accessToken }) => {
         if (!active) return;
-        if (!data.session) {
-          window.location.assign("/login");
-          return;
-        }
-        token.current = data.session.access_token;
+        token.current = accessToken;
         void load();
       })
       .catch(() => {
-        setError("Your session could not be checked. Please sign in again.");
-        setLoading(false);
+        if (!active) return;
+        window.location.assign("/auth/login");
       });
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        token.current = session?.access_token ?? "";
-      },
-    );
-    return () => {
-      active = false;
-      listener.subscription.unsubscribe();
-    };
+    return () => { active = false; };
   }, [demo, load]);
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 # PhysioTrace web app
 
-Next.js App Router, strict TypeScript, React, Supabase SSR authentication, and MediaPipe browser pose estimation. Pages remain thin; the patient and therapist features live in `src/features/physio/`.
+Next.js App Router, strict TypeScript, React, Auth0 Universal Login authentication, and MediaPipe browser pose estimation. Pages remain thin; the patient and therapist features live in `src/features/physio/`.
 
 ## Run
 
@@ -36,3 +36,8 @@ npm run build
 ```
 
 Tests use Node's built-in runner, without adding a test framework. Pose assets are generated into ignored `public/mediapipe/`. `npm run dev` and `npm run build` run `pose:setup` first, so the assets exist before serving or deploying. Without them the camera turns on but pose tracking cannot load. The model path is pinned to MediaPipe's full float16 version 1, which tracks floor exercises such as push-ups better than the lite model.
+
+
+## Auth0 setup (migration in progress)
+
+The Next.js app now uses the Auth0 Next.js SDK v4 middleware. Configure `AUTH0_DOMAIN`, `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, `AUTH0_SECRET`, `APP_BASE_URL`, and `AUTH0_AUDIENCE` in the root `.env`. Auth0 callback is `/auth/callback`; logout returns to the app root. The notes and upload widgets still contain Supabase dependencies pending the Vultr Object Storage and API migration; see the root `MIGRATION_STATUS.md`.

@@ -80,8 +80,8 @@ class Care:
         """
         allowed = {e.strip().lower() for e in settings.admin_emails.split(",") if e.strip()}
         email = (self.user.get("email") or "").lower()
-        providers = (self.user.get("app_metadata") or {}).get("providers") or []
-        return bool(email) and email in allowed and "google" in providers
+        verified = bool((self.user.get("claims") or {}).get("email_verified"))
+        return bool(email) and email in allowed and verified
 
 
 def get_care(user: dict = Depends(get_current_user), authorization: str = Header(default="")) -> Care:

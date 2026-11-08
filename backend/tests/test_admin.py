@@ -53,12 +53,12 @@ def test_admin_routes_validate_and_call_admin_functions(client: TestClient) -> N
     assert not any(service for _, path, _, service in calls if "/rpc/admin_" in path)  # the admin's own token
 
 
-def test_env_admin_needs_a_google_verified_email(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_env_admin_needs_an_auth0_verified_email(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(settings, "admin_emails", "Owner@Example.com, other@example.com")
-    google = {"email": "owner@example.com", "app_metadata": {"provider": "google", "providers": ["google"]}}
-    password = {"email": "owner@example.com", "app_metadata": {"provider": "email", "providers": ["email"]}}
-    stranger = {"email": "someone@example.com", "app_metadata": {"providers": ["google"]}}
-    for user, expected in ((google, True), (password, False), (stranger, False)):
+    verified = {"email": "owner@example.com", "claims": {"email_verified": True}}
+    unverified = {"email": "owner@example.com", "claims": {"email_verified": False}}
+    stranger = {"email": "someone@example.com", "claims": {"email_verified": True}}
+    for user, expected in ((verified, True), (unverified, False), (stranger, False)):
         calls: list = []
         profile = asyncio.run(care({"role": "patient", "is_admin": False}, user, calls).profile())
         assert profile["is_admin"] is expected

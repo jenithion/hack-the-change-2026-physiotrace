@@ -1,3 +1,5 @@
+> **Infrastructure migration in progress:** this working copy contains the first Auth0/TigerData/Vultr migration foundation. It is **not yet a complete Supabase removal**. See [MIGRATION_STATUS.md](MIGRATION_STATUS.md) for implemented work, remaining Supabase dependencies, and the safe cutover order. Do not disconnect the original Supabase project yet.
+
 # PhysioTrace
 
 Private exercise feedback for physiotherapy patients, with a review loop for their physical therapist.

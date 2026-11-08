@@ -1,20 +1,16 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { auth0 } from "@/lib/auth0";
 import { Uploads } from "@/features/uploads/uploads";
 
 export default async function UploadsPage() {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  if (!data?.claims) redirect("/login");
-
+  const session = await auth0.getSession();
+  if (!session?.user?.sub) redirect("/auth/login");
   return (
     <main>
       <h1>Files</h1>
-      <p>
-        <Link href="/dashboard">Back</Link>
-      </p>
-      <Uploads userId={data.claims.sub} />
+      <p><Link href="/dashboard">Back</Link></p>
+      <Uploads userId={session.user.sub} />
     </main>
   );
 }

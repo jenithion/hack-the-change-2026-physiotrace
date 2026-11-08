@@ -1,11 +1,10 @@
 import type { NextRequest } from "next/server";
-import { updateSession } from "@/lib/supabase/proxy";
+import { auth0 } from "@/lib/auth0";
 
-// Next.js 16 calls this file proxy.ts. On Next.js 15 or older it was middleware.ts.
-export function proxy(request: NextRequest) {
-  return updateSession(request);
+export async function proxy(request: NextRequest) {
+  return auth0.middleware(request);
 }
 
 export const config = {
-  matcher: ["/", "/dashboard/:path*", "/login", "/signup", "/logout"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)"],
 };
